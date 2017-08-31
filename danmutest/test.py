@@ -41,8 +41,8 @@ print('3')
 
 @dmc.danmu
 def danmu_fn(msg):
-    return
     pp('[%s] %s' % (msg['NickName'], msg['Content']))
+    return
     
 
 @dmc.gift

@@ -125,7 +125,11 @@ def robtv(roomurl, realroomid, tvid, test = False):
     
     
 def robstudy(roomurl, realroomid,   test = False):
+    print('rob study')
     
+    winsound.Beep(600,500)
+    winsound.Beep(300,500)
+    winsound.Beep(900,500)
     
     delay =  random.randint(2000, 4000)
     if  test is False :
@@ -135,17 +139,25 @@ def robstudy(roomurl, realroomid,   test = False):
     
     data = []
     try:
-        re = requests.get("http://api.live.bilibili.com/activity/v1/SchoolOpen/check?roomid=" +  (realroomid))
-        x = json.loads(re)
+        u1 = "http://api.live.bilibili.com/activity/v1/SchoolOpen/check?roomid=" +  (realroomid)
+        print(u1)
+        re0 = requests.get(u1)
+        print(re0)
+        re1 = re0.decode('decode')
+        x = json.loads(re1)
         data = x['data']
-    except:
+    except Exception as e:
         print('get study list fail ')
-        print (re)
+        print(e)
+        print (re1)
         return False
     print(data)
     
     if (type(data) != list):
         return False
+    if (len(data) ==0) :
+        print('zero list')
+        return 0
     
     for target in data:
         try:
