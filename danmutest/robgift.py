@@ -1,11 +1,16 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import time, urllib, random, threading, json, winsound, requests
+import time, urllib, random, threading, json, winsound, requests, gzip
 
 danmu_rnd = int(time.time())
 nowcookie = "pgv_pvi=1496014848; fts=1442990593; pgv_si=s5590225920; sid=80to18h9; _ga=GA1.2.18888997.1484058402; rpdid=olppqsqqsqdopqpwsqxxw; UM_distinctid=15ab6d5631d4c0-0a7e8799ef7e7e-6b1b1279-13c680-15ab6d5631e772; X-Through=Live-Api-Async; HTML5PlayerCRC32=2961144679; biliMzIsnew=1; biliMzTs=0; finger=edc6ecda; _cnt_dyn=0; uTZ=-480; _qddaz=QD.w4rad5.jh22gx.j6llthjw; buvid3=81BAB62C-CA0D-401C-85F9-092D47752AEC31597infoc2; DedeUserID=82778; DedeUserID__ckMd5=db22cc81b5150e95; SESSDATA=3dc3d386%2C1506477612%2Cdf19d0db; bili_jct=8f1072e39a68b7e9d0a58aed8f238fe0; _cnt_pm=1; _cnt_notify=32; LIVE_BUVID=903b962a52c4623f1c12599141e41431; LIVE_BUVID__ckMd5=13629ba9215dd5a9; LIVE_LOGIN_DATA=14d06d18c269ef6d0e73ce529f4c129781e93b22; LIVE_LOGIN_DATA__ckMd5=37a8c88983b4abb5; _dfcaptcha=5964dacfc2954105b64936c2d8c9cb08; Hm_lvt_8a6e55dbd2870f0f5bc9194cddf32a02=1503978394,1503978397,1503980903,1503981276; Hm_lpvt_8a6e55dbd2870f0f5bc9194cddf32a02=1504083791"
 nowagent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
-
+ 
+def bbbb():
+    winsound.Beep(600,500)
+    winsound.Beep(300,500)
+    winsound.Beep(900,500)
+    
 
 def sendDanmu(realroomid, msg, test = False):
     
@@ -127,9 +132,7 @@ def robtv(roomurl, realroomid, tvid, test = False):
 def robstudy(roomurl, realroomid,   test = False):
     print('rob study')
     
-    winsound.Beep(600,500)
-    winsound.Beep(300,500)
-    winsound.Beep(900,500)
+
     
     delay =  random.randint(2000, 4000)
     if  test is False :
@@ -141,9 +144,9 @@ def robstudy(roomurl, realroomid,   test = False):
     try:
         u1 = "http://api.live.bilibili.com/activity/v1/SchoolOpen/check?roomid=" +  (realroomid)
         print(u1)
-        re0 = requests.get(u1)
+        re0 = requests.get(u1).content
         print(re0)
-        re1 = re0.decode('decode')
+        re1 = re0.decode('utf-8')
         x = json.loads(re1)
         data = x['data']
     except Exception as e:
@@ -195,7 +198,26 @@ def robstudy(roomurl, realroomid,   test = False):
             req = urllib.request.Request(url,postdata,header)
             
             r=urllib.request.urlopen(req)
-            print(r.read().decode('utf-8'))
+            r1 = r.read();
+            try:
+                r2 = r1.decode('utf-8')
+                r3 = r2
+            except:
+                r2 = gzip.decompress(r1)
+                r3 = r2.decode('utf-8')
+            
+            try:
+                jo = json.loads(r3)
+                if (jo['code'] !=0) :
+                    bbbb()
+                    print(r1)
+                    print(r3) 
+            except Exception as e:
+                print(e)
+                print(r1)
+                print(r3)
+                bbbb() 
+            
             
             time.sleep( 0.1)
             

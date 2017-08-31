@@ -21,5 +21,5 @@ def gift_fn(msg):
 def other_fn(msg):
     pp('Other message received')
     print(msg)
-
+print('start')
 dmc.start(blockThread = True)

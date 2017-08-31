@@ -1,8 +1,8 @@
 import socket, json, re, select, time, random
 from struct import pack
 
-import requests
-
+import requests, zlib
+ 
 from .Abstract import AbstractDanMuClient
 
 class _socket(socket.socket):
@@ -42,8 +42,7 @@ class BilibiliDanMuClient(AbstractDanMuClient):
         def get_danmu(self):
             if not select.select([self.danmuSocket], [], [], 1)[0]: return
             content = self.danmuSocket.pull()
-            print(len(content))
-            print(content)
+
             acc = 0
             for msg in re.findall(b'\x00({[^\x00]*})', content):
                 try:
@@ -60,10 +59,7 @@ class BilibiliDanMuClient(AbstractDanMuClient):
                     self.danmuWaitTime = time.time() + self.maxNoDanMuWait
                     self.msgPipe.append(msg)
             
-            if (acc != len(content)) :
-                #print("?warn?")
-                #print(content)
-                pass
+ 
                 
             
         return get_danmu, keep_alive # danmu, heart
