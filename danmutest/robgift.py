@@ -45,7 +45,7 @@ def sendDanmu(realroomid, msg, test = False):
         }
     
     
-    print('try send danmu')
+    print('try send danmu',realroomid, msg)
     
     
     print(url)

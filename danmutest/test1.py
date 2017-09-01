@@ -1,6 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import time, sys, os, json,random
+import time, sys, os, json
 import winsound
 
 import robgift 
@@ -11,9 +11,7 @@ import robgift
 
 from danmu import DanMuClient
 
-import emoji
-
-import realtest 
+ 
 
  
 
@@ -43,6 +41,9 @@ print('3')
 @dmc.danmu
 def danmu_fn(msg):
     try:
+        fo = open('danmu.txt', 'a')
+        print(msg, file = fo)
+        fo.close()
         if (msg['NickName'] == '十八呀么十八喵') :
             #robgift.sendDanmu(356767, emoji.randEmoji())
             robgift.bbbb()
@@ -65,6 +66,14 @@ def other_fn(msg):
     ts = time.strftime("%Y %m %d %H:%M:%S", localtime)
     print ('local:', ts)
     print(msg)
+    
+    try:
+        fo = open('other.txt', 'a')
+        print(ts, file = fo)
+        print(msg, file = fo)
+        fo.close()
+    except Exception as e:
+        print(e)
     
     if (robgift.isBeatstorm(msg)):
         try:
@@ -105,6 +114,10 @@ dmc.start(blockThread=False)
 
 print('5')
 
-while True:
-    time.sleep(0.1)
+
+
+
+if __name__ == "__main__":
+    while True:
+        time.sleep(0.1)
 
