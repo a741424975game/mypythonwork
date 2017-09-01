@@ -29,7 +29,6 @@ def sendDanmu(realroomid, msg, test = False):
               
                     }).encode('utf-8') 
     
-    print(postdata)
     
     header={
         "Accept":" */*",
