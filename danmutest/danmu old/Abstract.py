@@ -12,7 +12,7 @@ logger = logging.getLogger('danmu')
 class AbstractDanMuClient(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, url, maxNoDanMuWait = 300, anchorStatusRescanTime = 30):
+    def __init__(self, url, maxNoDanMuWait = 180, anchorStatusRescanTime = 30):
         self.url = url
         self.maxNoDanMuWait = maxNoDanMuWait
         self.anchorStatusRescanTime = anchorStatusRescanTime
@@ -48,7 +48,6 @@ class AbstractDanMuClient(object):
             try:
                 fn(*args, **kwargs)
             except Exception as e:
-                print(e)
                 logger.debug(traceback.format_exc())
                 if not self.live: return
                 self.live = False

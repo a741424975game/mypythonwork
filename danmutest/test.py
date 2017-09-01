@@ -42,12 +42,11 @@ print('3')
 
 @dmc.danmu
 def danmu_fn(msg):
-    pp('[%s] %s' % (msg['NickName'], msg['Content']))
     try:
         if (msg['NickName'] == '十八呀么十八喵') :
             #robgift.sendDanmu(356767, emoji.randEmoji())
             robgift.bbbb()
-            
+            pp('[%s] %s' % (msg['NickName'], msg['Content']))
     except Exception as e:
         print(e)
     

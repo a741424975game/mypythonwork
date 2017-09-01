@@ -128,7 +128,8 @@ def robtv(roomurl, realroomid, tvid, test = False):
     print(re)
     return re
     
-    
+studyHistory = []
+
 def robstudy(roomurl, realroomid,   test = False):
     print('rob study')
     
@@ -168,8 +169,8 @@ def robstudy(roomurl, realroomid,   test = False):
             #"data":[{"raffleId":"27279","type":"school","from":"黑丝细腿","time":38,"status":1}]}
             url = "http://api.live.bilibili.com/activity/v1/SchoolOpen/join" 
             raffleId = target['raffleId']
-            status = target['status']
-            if (status != 1):
+             
+            if (raffleId in studyHistory):
                 print ('already inside')
                 continue
             postdata=urllib.parse.urlencode({  
@@ -212,6 +213,9 @@ def robstudy(roomurl, realroomid,   test = False):
                     bbbb()
                     print(r1)
                     print(r3) 
+                else:
+                    print ('rob study ok')
+                    studyHistory.append(raffleId)
             except Exception as e:
                 print(e)
                 print(r1)
