@@ -57,9 +57,9 @@ class BilibiliDanMuClient(AbstractDanMuClient):
             while (True) :
                 if (len(self.cache) <8):
                     break
-                l,x = unpack('!ii', self.cache[0:8])
-                
-                if (x != 1048577 and x!= 1048578):
+                l,x = unpack('!ih', self.cache[0:6])
+                 
+                if (x != 16):
                     print (self.cache)
                     raise Exception('Error danmu head!!!!!!!!!!!!!!!!!!')
                 
@@ -67,7 +67,6 @@ class BilibiliDanMuClient(AbstractDanMuClient):
                     break;
                 deals = self.cache[0:l]
                 self.cache = self.cache[l:]
-                
                 
                 self.danmuWaitTime = time.time() + self.maxNoDanMuWait
                 
