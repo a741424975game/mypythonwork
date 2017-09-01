@@ -53,8 +53,6 @@ def sendDanmu(realroomid, msg, test = False):
     print(postdata)
     #print(header)
     
-    
-    
     req = urllib.request.Request(url,postdata,header)
     
     if (test):
@@ -63,8 +61,6 @@ def sendDanmu(realroomid, msg, test = False):
     r=urllib.request.urlopen(req)
     re = r.read().decode('utf-8')
     print(re)
-    time.sleep(0.5)
-    sendDanmu(realroomid, emoji.randEmoji())   
     return re
 
 def robBeatstorm(msg):
@@ -128,6 +124,10 @@ def robtv(roomurl, realroomid, tvid, test = False):
     r=urllib.request.urlopen(req)
     re = (r.read().decode('utf-8'))
     print(re)
+    
+    time.sleep(0.5)
+    sendDanmu(realroomid, emoji.randEmoji())   
+    
     return re
     
 studyHistory = []

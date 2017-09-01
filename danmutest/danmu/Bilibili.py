@@ -75,11 +75,12 @@ class BilibiliDanMuClient(AbstractDanMuClient):
                 data = deals[16:]
                 #print (data)
                 try:
-                    x = zlib.decompress(data)
-                    #print (x)
-                    if (len(x) < 20):
-                        continue
-                    deals = x
+                    if (data[0:1] == b'x') :
+                        x = zlib.decompress(data)
+                        #print (x)
+                        if (len(x) < 20):
+                            continue
+                        deals = x
                 except Exception as e:
                     print(e)
                     
