@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+﻿# -*- coding: UTF-8 -*-
 
 import re, random
 
@@ -17,7 +17,7 @@ for emoji in re.findall('<a>.*?</a>', ss):
 
 def randEmoji():
     try:
-        return (allemoji[ random.randint(0, len(allemoji)-1)])
+        return (allemoji[ random.randint(0, len(allemoji)-3)])
     except Exception as e:
         print (e)
         return '-_-'

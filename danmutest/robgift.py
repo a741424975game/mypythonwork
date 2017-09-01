@@ -125,7 +125,7 @@ def robtv(roomurl, realroomid, tvid, test = False):
     print(re)
     
     time.sleep(0.5)
-    sendDanmu(realroomid, emoji.randEmoji())   
+    sendDanmu(realroomid, '(-_-)')      
     
     return re
     
@@ -232,7 +232,7 @@ def robstudy(roomurl, realroomid,   test = False):
     
     if (acc>0) :
         time.sleep(0.5)
-        sendDanmu(realroomid, emoji.randEmoji())        
+        sendDanmu(realroomid, '(-_-)')        
     
     return True
     

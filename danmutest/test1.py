@@ -61,7 +61,7 @@ def gift_fn(msg):
 
 @dmc.other
 def other_fn(msg):
-    pp('Other message received')
+    print('Other message received')
     localtime = time.localtime(time.time())
     ts = time.strftime("%Y %m %d %H:%M:%S", localtime)
     print ('local:', ts)
@@ -102,7 +102,8 @@ def other_fn(msg):
     if (robgift.isStudy(msg)) : 
         try:
             robgift.robstudy(msg['url'], msg['real_roomid'])
-        except:
+        except Exception as e :
+            print(e)
             print('rob study fail!!')
         return
         
