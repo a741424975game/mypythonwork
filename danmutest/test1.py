@@ -4,7 +4,7 @@ import time, sys, os, json
 import winsound
 
 import robgift 
-
+import robtv
 
 
 
@@ -82,7 +82,8 @@ def other_fn(msg):
             print ('rob beatstorm fail')
         return 
     
-    if ('tv_id' in msg) :
+    robtv.robtvthread(msg)
+    if False :#('tv_id' in msg) :
         winsound.Beep(600,500)
         try:
             re = robgift.robtv(msg['url'], msg['real_roomid'], msg['tv_id'])
@@ -90,28 +91,23 @@ def other_fn(msg):
             re = json.loads(re)
             if ('code' in re) :
                 if re['code'] !=0 :
-                    for i in range(0,5) :
-                        winsound.Beep(600,500)
-                        winsound.Beep(300,500)
-                        winsound.Beep(900,500)
+                    robgift.bbbb()
             
         except Exception as e :
             print('robgift except', e)
-            
+            robgift.bbbb()
         return
     if (robgift.isStudy(msg)) : 
         try:
             robgift.robstudy(msg['url'], msg['real_roomid'])
         except Exception as e :
+            robgift.bbbb()
             print(e)
             print('rob study fail!!')
         return
         
 print('4')
 dmc.start(blockThread=False)
-
-
- 
 
 print('5')
 
