@@ -6,6 +6,7 @@ import bilibilicookie
     
 studyHistory = []
 studyCheck = []
+studymutex = threading.Lock() 
 def isStudy(msg):
     try:
         if msg['giftId'] == 85 :
@@ -15,16 +16,15 @@ def isStudy(msg):
     return False      
 
 def robstudy(roomurl, realroomid,   test = False):
-    print('rob study')
     
-
-    
-    delay =  random.randint(2000, 4000)
-    if  test is False :
-        time.sleep( delay/ 1000.0)
-     
     realroomid = str(realroomid)
+    print('rob study')
+    delay =  random.randint(2000, 4000)
+    time.sleep( delay * 2/ 1000.0)
+     
+    robgift.sendDanmu(realroomid, '(-_-)' )
     
+    time.sleep( delay  / 1000.0)
     data = []
     try:
         u1 = "http://api.live.bilibili.com/activity/v1/SchoolOpen/check?roomid=" +  (realroomid)
@@ -52,7 +52,7 @@ def robstudy(roomurl, realroomid,   test = False):
             #{"code":0,"msg":"success","message":"success",
             #"data":[{"raffleId":"27279","type":"school","from":"黑丝细腿","time":38,"status":1}]}
             url = "http://api.live.bilibili.com/activity/v1/SchoolOpen/join" 
-            raffleId = target['raffleId']
+            raffleId = int(target['raffleId'])
              
             if (raffleId in studyHistory):
                 print ('already inside')
@@ -101,6 +101,11 @@ def robstudy(roomurl, realroomid,   test = False):
                     print ('rob study ok')
                     studyHistory.append(raffleId)
                     acc +=1
+                    
+                    studymutex.acquire()
+                    studyCheck.append( (roomurl, realroomid, raffleId, time.time()))
+                    studymutex.release()
+                    
             except Exception as e:
                 print(e)
                 print(r1)
@@ -114,8 +119,8 @@ def robstudy(roomurl, realroomid,   test = False):
             print (e)
     
     if (acc>0) :
-        time.sleep(0.5)
-        robgift.sendDanmu(realroomid, '(-_-)')        
+        time.sleep(delay/ 1000.0)
+        robgift.sendDanmu(realroomid, '(;-_-)')        
     
     return True
 
@@ -145,11 +150,18 @@ def checkstudyresult(roomurl, realroomid, raffleid):
     print(url) 
     
     req = urllib.request.Request(url,None,header)
- 
-    
     r=urllib.request.urlopen(req)
     re = (r.read().decode('utf-8'))
     print(re)
+    
+    try:
+        fo = open('result.txt', 'a', encoding = 'utf-8')
+        print(url, file = fo)
+        print(re, file = fo)
+        fo.close()
+    except Exception as e:
+        print('save result file', e)
+    
 
 def robstudywork(msg):
     try:
@@ -165,11 +177,7 @@ def robstudywork(msg):
         return
         
     print ('rob study ok')
-    time.sleep(80)
-    try:
-        checkstudyresult(msg['url'],  msg['tv_id'])
-    except Exception as e :
-        print(e)
+ 
         
         
 def robstudythread(msg):
@@ -178,11 +186,35 @@ def robstudythread(msg):
     t.setDaemon(True)
     t.start()
     
-def studycheck():
-    pass
+def studycheckwork():
+    print('start study check work')
+    while True:
+        time.sleep(2)
+        if not studymutex.acquire(1000): continue
+        try:
+            now = time.time()
+            target = None
+            for t in studyCheck :
+                ts = t[3]
+                if (ts + 100 * 1000 <= now) : 
+                    target = t 
+                    break
+            if (target is not None):
+                studyCheck.remove(target)
+        except Exception as e:
+            print('studycheck 1',e) 
+        studymutex.release()
+        
+        if (target is None): continue
+        
+        try:
+            checkstudyresult(target[0], target[1], target[2])
+        except Exception as e:
+            print('studycheck 2', e)
+        
 
 
-t = threading.Thread(target= studycheck)
+t = threading.Thread(target= studycheckwork)
 t.setDaemon(True)
 t.start()
 

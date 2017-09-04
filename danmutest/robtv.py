@@ -90,9 +90,20 @@ def checktvresult(roomurl, tvid):
  
     
     r=urllib.request.urlopen(req)
-    re = (r.read().decode('utf-8'))
     print('check tv result', roomurl, tvid)
+    re0 = r.read()
+    print(re0)
+    
+    re = (re0.decode('utf-8'))
     print(re)
+    
+    try:
+        fo = open('result.txt', 'a', encoding = 'utf-8')
+        print(url, file = fo)
+        print(re, file = fo)
+        fo.close()
+    except Exception as e:
+        print('save result file', e)
 
 def robtvwork(msg):
     try:
@@ -108,7 +119,7 @@ def robtvwork(msg):
         return
         
     print ('rob tv ok')
-    time.sleep(280)
+    time.sleep(330)
     try:
         checktvresult(msg['url'],  msg['tv_id'])
     except Exception as e :

@@ -1,15 +1,16 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import time, sys, os, json
-import winsound
+import time, sys, os 
+ 
 
 import robgift 
 import robtv
-
-
+import robstudy
+import robbeatstorm
 
 
 from danmu import DanMuClient
+ 
 
  
 
@@ -41,15 +42,18 @@ print('3')
 @dmc.danmu
 def danmu_fn(msg):
     try:
-        fo = open('danmu.txt', 'a')
-        print(msg, file = fo)
-        fo.close()
+
         if (msg['NickName'] == '十八呀么十八喵') :
             #robgift.sendDanmu(356767, emoji.randEmoji())
             robgift.bbbb()
             pp('[%s] %s' % (msg['NickName'], msg['Content']))
+        
+        fo = open('danmu.txt', 'a',  encoding ='utf-8')
+        print(msg, file = fo)
+        fo.close()
+        
     except Exception as e:
-        print(e)
+        print('danmu_fn', e)
     
     return
     
@@ -61,50 +65,28 @@ def gift_fn(msg):
 
 @dmc.other
 def other_fn(msg):
-    print('Other message received')
-    localtime = time.localtime(time.time())
-    ts = time.strftime("%Y %m %d %H:%M:%S", localtime)
-    print ('local:', ts)
-    print(msg)
-    
     try:
-        fo = open('other.txt', 'a')
+        print('Other message received')
+        localtime = time.localtime(time.time())
+        ts = time.strftime("%Y %m %d %H:%M:%S", localtime)
+        print ('local:', ts)
+        print(msg)
+    except Exception as e:
+        print('other_fn', e)
+        
+    try:
+        fo = open('other.txt', 'a', encoding = 'utf-8')
         print(ts, file = fo)
         print(msg, file = fo)
         fo.close()
     except Exception as e:
-        print(e)
+        print('save file', e)
     
-    if (robgift.isBeatstorm(msg)):
-        try:
-            robgift.robBeatstorm(msg)
-        except:
-            print ('rob beatstorm fail')
-        return 
     
+    robbeatstorm.robBeatstormWork(msg)
     robtv.robtvthread(msg)
-    if False :#('tv_id' in msg) :
-        winsound.Beep(600,500)
-        try:
-            re = robgift.robtv(msg['url'], msg['real_roomid'], msg['tv_id'])
-            
-            re = json.loads(re)
-            if ('code' in re) :
-                if re['code'] !=0 :
-                    robgift.bbbb()
-            
-        except Exception as e :
-            print('robgift except', e)
-            robgift.bbbb()
-        return
-    if (robgift.isStudy(msg)) : 
-        try:
-            robgift.robstudy(msg['url'], msg['real_roomid'])
-        except Exception as e :
-            robgift.bbbb()
-            print(e)
-            print('rob study fail!!')
-        return
+    robstudy.robstudythread(msg)
+     
         
 print('4')
 dmc.start(blockThread=False)
