@@ -165,14 +165,10 @@ def checkstudyresult(roomurl, realroomid, raffleid):
 
 def robstudywork(msg):
     try:
-        re = robstudy(msg['url'], msg['real_roomid'])
-        re = json.loads(re)
-        if ('code' in re) :
-            if re['code'] !=0 :
-                robgift.bbbb()
-                return
+        robstudy(msg['url'], msg['real_roomid'])
+  
     except Exception as e :
-        print('robgift except', e)
+        print('rob study work except', e)
         robgift.bbbb()
         return
         
@@ -196,7 +192,8 @@ def studycheckwork():
             target = None
             for t in studyCheck :
                 ts = t[3]
-                if (ts + 100 * 1000 <= now) : 
+                 
+                if (ts + 120   <= now) : 
                     target = t 
                     break
             if (target is not None):

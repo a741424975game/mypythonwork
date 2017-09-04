@@ -65,8 +65,9 @@ def gift_fn(msg):
 
 @dmc.other
 def other_fn(msg):
+    
+    print('Other message received')
     try:
-        print('Other message received')
         localtime = time.localtime(time.time())
         ts = time.strftime("%Y %m %d %H:%M:%S", localtime)
         print ('local:', ts)
@@ -86,8 +87,9 @@ def other_fn(msg):
     robbeatstorm.robBeatstormWork(msg)
     robtv.robtvthread(msg)
     robstudy.robstudythread(msg)
-     
-        
+    
+    print('Other message end')    
+    
 print('4')
 dmc.start(blockThread=False)
 

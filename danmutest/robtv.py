@@ -114,7 +114,7 @@ def robtvwork(msg):
                 robgift.bbbb()
                 return
     except Exception as e :
-        print('robgift except', e)
+        print('robtv except', e)
         robgift.bbbb()
         return
         
