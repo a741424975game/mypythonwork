@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-import threading, re, requests, time
+import threading, re, requests, time, json
 import robgift
 
 from danmu import DanMuClient
@@ -83,13 +83,13 @@ def robglobalstormwork(msg):
         if not isBeatstorm(msg) : return
         
         robBeatstorm(msg, realroomid)
-        time.sleep(2.0)
+        time.sleep(4.0)
         robBeatstorm(msg, realroomid)
-        time.sleep(2.0)
+        time.sleep(4.0)
         robBeatstorm(msg, realroomid)
-        time.sleep(2.0)
+        time.sleep(4.0)
         robBeatstorm(msg, realroomid)
-        time.sleep(2.0)
+        time.sleep(4.0)
         robBeatstorm(msg, realroomid)
         
         print('rob global beat storm  end')
@@ -131,6 +131,14 @@ def robBeatstormWork(msg):
         
         
 if __name__ == "__main__":
-    robGlobalstorm(1)
+    test = """
+    {"cmd": "SYS_GIFT", "msg": "阿梓家的猛男:? 在直播间 :?80397:? 使用了 20 倍节奏风暴，大家快去跟风领取奖励吧！",
+ "tips": "【阿梓家的猛男】在直播间【80397】使用了 20 倍节奏风暴，大家快去跟风领取奖励吧！", 
+ "giftId": 39, "msgTips": 1, "url": "http://live.bilibili.com/82789", 
+ "roomid": 80397, "rnd": 1504509162, "NickName": "", "Content": "", "MsgType": "other"}
+ """
+    m = json.loads(test)
+    print(m)
+    robGlobalstorm(m)
     while True:
         time.sleep(0.1)
