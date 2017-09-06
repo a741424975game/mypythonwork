@@ -62,13 +62,24 @@ def robBeatstorm(msg, realroomid = 356767):
 
 def robglobalstormwork(msg):
     url = msg['url']
+    print(url)
     dmc = DanMuClient(url)
-    if not dmc.isValid(): print('Url not valid')
+    if not dmc.isValid(): 
+        print('Url not valid')
+        return
+    else : 
+        print('url ok')
     
     realroomId = re.findall(b'var ROOMID = (\d+);', requests.get(url).content)[0].decode('ascii')
+    if (realroomId == 356767) :
+        print('356767   same  ')
+        return
+    
+    print(' robglobalstormwork realroomId ', realroomId)
     
     @dmc.other
     def other_fn(msg, realroomid = realroomId):
+        print('storm other fn', msg)
         if not isBeatstorm(msg) : return
         
         robBeatstorm(msg, realroomid)
@@ -88,7 +99,7 @@ def robglobalstormwork(msg):
     dmc.start(blockThread=False)
     time.sleep(100)
     dmc.stop()
-    
+    print('robglobalstormwork  end')
 def robglobaltest(msg):
     try:
         robglobalstormwork(msg)
@@ -117,3 +128,9 @@ def robBeatstormWork(msg):
             return
     except Exception as e:
         print ('rob glabol beat storm fail', e)
+        
+        
+if __name__ == "__main__":
+    robGlobalstorm(1)
+    while True:
+        time.sleep(0.1)
