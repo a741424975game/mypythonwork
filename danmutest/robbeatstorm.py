@@ -74,9 +74,23 @@ def robglobalstormwork(msg):
     if (realroomId == 356767) :
         print('356767   same  ')
         return
-    
+    danmu_count = {}
     print(' robglobalstormwork realroomId ', realroomId)
-    
+    @dmc.danmu
+    def danmu_fn(msg, realroomid = realroomId):
+        try:
+            m = msg['Content']
+            danmu_count[ m] +=1
+            if danmu_count[m] >25 :
+                print ('send duplicate 25')
+                robgift.sendDanmu(realroomid, m)
+                time.sleep(4.0)
+                robgift.sendDanmu(realroomid, m)
+                dmc.stop()
+                danmu_count.clear()
+        except Exception as e:
+            print(e)
+        
     @dmc.other
     def other_fn(msg, realroomid = realroomId):
         print('storm other fn', msg)
@@ -124,6 +138,7 @@ def robBeatstormWork(msg):
     
     try:
         if (isGlobalBeatstrom(msg)):
+            robgift.bbbb()
             robGlobalstorm(msg)
             return
     except Exception as e:
@@ -131,6 +146,12 @@ def robBeatstormWork(msg):
         
         
 if __name__ == "__main__":
+    
+    d = {}
+    d[1] = 1
+    d[1] +=2
+    print(d)
+    
     test = """
     {"cmd": "SYS_GIFT", "msg": "阿梓家的猛男:? 在直播间 :?80397:? 使用了 20 倍节奏风暴，大家快去跟风领取奖励吧！",
  "tips": "【阿梓家的猛男】在直播间【80397】使用了 20 倍节奏风暴，大家快去跟风领取奖励吧！", 
