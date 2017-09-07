@@ -33,13 +33,13 @@ class BilibiliDanMuClient(AbstractDanMuClient):
         self.cache = b''
         return (self.serverUrl, int(self.port)), {}
     def _init_socket(self, danmu, roomInfo):
-        print('danmu socket init')
+        #print('danmu socket init')
         self.danmuSocket = _socket()
         self.danmuSocket.connect(danmu)
         self.danmuSocket.settimeout(3)
         self.danmuSocket.push(data = json.dumps({
             'roomid': int(self.roomId),
-            'uid': int(1e14 + 2e14 * random.random()),
+            'uid': 82778,
             'protover': 2,
             }, separators=(',', ':')).encode('ascii'))
     def _create_thread_fn(self, roomInfo):

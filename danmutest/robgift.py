@@ -1,11 +1,9 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import time, urllib, random, threading, json, winsound, requests, gzip
- 
-
+import time, urllib,   threading,   winsound 
+import bilibilicookie
+from danmu import DanMuClient
 danmu_rnd = int(time.time())
-nowcookie = "X-Through=Live-Api-Async; l=v; pgv_pvi=1496014848; fts=1442990593; pgv_si=s5590225920; sid=80to18h9; _ga=GA1.2.18888997.1484058402; rpdid=olppqsqqsqdopqpwsqxxw; UM_distinctid=15ab6d5631d4c0-0a7e8799ef7e7e-6b1b1279-13c680-15ab6d5631e772; X-Through=Live-Api-Async; HTML5PlayerCRC32=2961144679; biliMzIsnew=1; biliMzTs=0; finger=edc6ecda; _cnt_dyn=0; uTZ=-480; _qddaz=QD.w4rad5.jh22gx.j6llthjw; buvid3=81BAB62C-CA0D-401C-85F9-092D47752AEC31597infoc2; LIVE_BUVID=903b962a52c4623f1c12599141e41431; LIVE_BUVID__ckMd5=13629ba9215dd5a9; _cnt_pm=1; _cnt_notify=32; DedeUserID=82778; DedeUserID__ckMd5=db22cc81b5150e95; SESSDATA=3dc3d386%2C1507016361%2C9a963861; bili_jct=f57d1daf2be372adf07d58dd7e3cb7da; LIVE_LOGIN_DATA=664c9a7e9e86139b0124ed3914e4d1430a5f763e; LIVE_LOGIN_DATA__ckMd5=52527bde3509712c; _dfcaptcha=42d8a1c5b4b95083b5ee1d03d9122de9; Hm_lvt_8a6e55dbd2870f0f5bc9194cddf32a02=1503978394,1503978397,1503980903,1503981276; Hm_lpvt_8a6e55dbd2870f0f5bc9194cddf32a02=1504424384"
-nowagent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
  
 def bbbb():
     winsound.Beep(600,500)
@@ -35,12 +33,12 @@ def sendDanmu(realroomid, msg, test = False):
         "Accept-Encoding":"gzip, deflate",
         "Accept-Language": "zh-CN,zh;q=0.8",
         "Connection":"keep-alive",
-        "Cookie": nowcookie,
+        "Cookie": bilibilicookie.nowcookie,
         "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
         "Host":"api.live.bilibili.com",
         "Origin":"http://static.hdslb.com",
         "Referer": "http://static.hdslb.com/live-static/swf/LivePlayerEx_1.swf?_=1-1-1.1.0",
-        "User-Agent":nowagent,
+        "User-Agent":bilibilicookie.nowagent,
         "X-Requested-With" : "ShockwaveFlash/26.0.0.151",       
         }
     
@@ -62,279 +60,79 @@ def sendDanmu(realroomid, msg, test = False):
     print(re)
     return re
 
-def robBeatstorm(msg):
-#url = ('http://live.bilibili.com/'
-#+ self.url.split('/')[-1] or self.url.split('/')[-2])
-#self.roomId = re.findall(b'var ROOMID = (\d+);', requests.get(url).content)[0].decode('ascii')
-    try:
-        x =  msg['data']['39']
-        content = x['content']
-    except:
-        print ("rob beatstorm error")
+
+
+danmulist = {}
+
+danmumutex = threading.Lock() 
+
+def printtime(t):
+        localtime = time.localtime(t)
+        ts = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
+        return ts
+
+
+def moniterDanmu(url):
+    
+    if (url == "http://live.bilibili.com/356767") :
+        print ( 'moniterDanmu  same  return ',  url)
         return
-
-    sendDanmu(356767, content)
     
-    return
-
-def robtv(roomurl, realroomid, tvid, test = False):
+    nowt = time.time()
     
-    
-    print('try rob tv')
-    
-    delay =  random.randint(5000, 8000)
-    if  test is False :
-        print('delay', delay)
-        time.sleep( delay/ 1000.0)
-    
-    realroomid = int(realroomid)
-    tvid = int(tvid)
-    timestamp = int( time.time() * 1000)  
-    url = "http://api.live.bilibili.com/SmallTV/join?roomid=%d&id=%d&_=%d" % (realroomid, tvid, timestamp)
-    
-    
-    #postdata=urllib.parse.urlencode({        "JobName":"测试工程师",        }).encode('utf-8')
-    
-    header={
-        "Accept":"application/json, text/javascript, */*; q=0.01",
-        "Accept-Encoding":"gzip, deflate",
-        "Accept-Language": "zh-CN,zh;q=0.8",
-        "Connection":"keep-alive",
-        "Cookie": nowcookie,
-        
-        "Host":"api.live.bilibili.com",
-        "Origin":"http://live.bilibili.com",
-        "Referer": roomurl,
-         
-        "User-Agent":nowagent,
-                
-        }
-    
-    print(url)
-    #print(header)
-    
-    req = urllib.request.Request(url,None,header)
-    
-    print(req)
-        
-    if test:
-        return ""
-    
-    r=urllib.request.urlopen(req)
-    re = (r.read().decode('utf-8'))
-    print(re)
-    
-    time.sleep(0.5)
-    sendDanmu(realroomid, '(-_-)')      
-    
-    return re
-    
-studyHistory = []
-
-def robstudy(roomurl, realroomid,   test = False):
-    print('rob study')
-    
-
-    
-    delay =  random.randint(2000, 4000)
-    if  test is False :
-        time.sleep( delay/ 1000.0)
-     
-    realroomid = str(realroomid)
-    
-    data = []
+    danmumutex.acquire()
     try:
-        u1 = "http://api.live.bilibili.com/activity/v1/SchoolOpen/check?roomid=" +  (realroomid)
-        print(u1)
-        re0 = requests.get(u1).content
-        print(re0)
-        re1 = re0.decode('utf-8')
-        x = json.loads(re1)
-        data = x['data']
+        if (url in danmulist) :
+            (d,t) = danmulist[url]
+            danmulist[url] = (d, )
+            
+            print('extend moniter', url, printtime(nowt))
+        else :
+            d = DanMuClient(url)
+            d.start(blockThread = False)
+            danmulist[url] = (d, nowt)
+            print('start moniter', url, printtime(nowt))
     except Exception as e:
-        print('get study list fail ')
         print(e)
-        print (re1)
-        return False
-    print(data)
-    
-    if (type(data) != list):
-        return False
-    if (len(data) ==0) :
-        print('zero list')
-        return 0
-    acc = 0
-    for target in data:
-        try:
-            #{"code":0,"msg":"success","message":"success",
-            #"data":[{"raffleId":"27279","type":"school","from":"黑丝细腿","time":38,"status":1}]}
-            url = "http://api.live.bilibili.com/activity/v1/SchoolOpen/join" 
-            raffleId = target['raffleId']
-             
-            if (raffleId in studyHistory):
-                print ('already inside')
-                continue
-            postdata=urllib.parse.urlencode({  
-                      "roomid":realroomid,  
-                      "raffleId": raffleId
-                            }).encode('utf-8')
-            
-            header={
-                "Accept":"application/json, text/javascript, */*; q=0.01",
-                "Accept-Encoding":"gzip, deflate",
-                "Accept-Language": "zh-CN,zh;q=0.8",
-                "Connection":"keep-alive",
-                "Cookie":nowcookie,
-                "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
-                "Host":"api.live.bilibili.com",
-                "Origin":"http://live.bilibili.com",
-                "Referer": roomurl,
-                 
-                "User-Agent":nowagent,
-                        
-                }
-            
-            print('try rob study')
-            print(postdata)
-            
-            req = urllib.request.Request(url,postdata,header)
-            
-            r=urllib.request.urlopen(req)
-            r1 = r.read();
-            try:
-                r2 = r1.decode('utf-8')
-                r3 = r2
-            except:
-                r2 = gzip.decompress(r1)
-                r3 = r2.decode('utf-8')
-            
-            try:
-                jo = json.loads(r3)
-                if (jo['code'] !=0) :
-                    bbbb()
-                    print(r1)
-                    print(r3) 
-                else:
-                    print ('rob study ok')
-                    studyHistory.append(raffleId)
-                    acc +=1
-            except Exception as e:
-                print(e)
-                print(r1)
-                print(r3)
-                bbbb() 
-            
-            time.sleep( 0.1)
-            
-        except Exception as e:
-            print("fail rob study one")
-            print (e)
-    
-    if (acc>0) :
-        time.sleep(0.5)
-        sendDanmu(realroomid, '(-_-)')        
-    
-    return True
-    
-    
-def isTv(msg):
-    try:
-        if ('tv_id' in msg):
-            return True
-    except:
-        pass
-    
-    return False
-      
-def isStudy(msg):
-    try:
-        if msg['giftId'] == 85 :
-            return True
-    except:
-        pass
-    return False      
-
-def isBeatstorm(msg):
-    try:
-        if (msg['cmd'] == 'SPECIAL_GIFT') :
-            x =  msg['data']['39']
-            content = x['content']
-            if (type(content) == str and len(content) >0) :
-                return True  
-    except:
-        pass
-    return False
-
-msgpool = []
-msgmutex = threading.Lock() 
-
-
-def dealmsg(msg):
-    f = False
-    f = f or isTv(msg)
-    f = f or isStudy(msg)
-    
-    if f is False:
-        return
-    
-    msgmutex.acquire()
-    
-    for m in msgpool:
-        if (m == msg) :
-            break
-    else:
-        msgpool.append(msg)
         
-    msgmutex.release()
-        
-        
-        
-        
-def dealtv():
-    msgmutex.acquire()
-    msg = None
-    for m in msgpool:
-        if isTv(m) :
-            msg = m
-            break
-    if msg is None :
-        msgmutex.release()
-        return
-    
-    msgpool.remove(msg)
-    msgmutex.release()
+    danmumutex.release()
 
-    try:
-        re = robtv(msg['url'], msg['real_roomid'], msg['tv_id'])
-        
-        re = json.loads(re)
-        if ('code' in re) :
-            if re['code'] !=0 :
-                for i in range(0,5) :
-                    winsound.Beep(600,500)
-                    winsound.Beep(300,500)
-                    winsound.Beep(900,500)
-        
-    except Exception as e :
-        print('dealtv except', e)
-
-
-def dealStudy():
     
-    pass    
-    
+
 def work():
-    print("enter rob work")
+    print("enter danmu work")
     while True:
-        time.sleep(1)
-        try:
-            dealStudy()
-        except Exception as e :
-            print('work except', e)        
+        time.sleep(10)
+        nowt = time.time()
         
+        if not danmumutex.acquire(500): continue
+        keys = danmulist.keys()
+        
+        pt = []
+        
+        for key in keys :
+            (d,t) = danmulist[key]
+            if (t +400 < nowt) :
+                d.stop()
+                pt.append(key)
+                print('end moniter', key, printtime(nowt))
+                
+        for x in pt :
+            danmulist.pop(x)
+        danmumutex.release()
 
-robthread = threading.Thread(target=work)
-robthread.setDaemon(True)
-robthread.start()
+danmuthread = threading.Thread(target=work)
+danmuthread.setDaemon(True)
+danmuthread.start()
         
             
+if __name__ == "__main__":
+    print('robgift!!!!!!!!!!!!!!!!!!!!')
+    
+    moniterDanmu("http://live.bilibili.com/82789")
+    
+    while True:
+        print(time.time())
+        time.sleep(10)
+        
+                    

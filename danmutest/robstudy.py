@@ -165,6 +165,7 @@ def checkstudyresult(roomurl, realroomid, raffleid):
 
 def robstudywork(msg):
     try:
+        robgift.moniterDanmu(msg['url'])
         robstudy(msg['url'], msg['real_roomid'])
   
     except Exception as e :

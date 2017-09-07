@@ -107,6 +107,8 @@ def checktvresult(roomurl, tvid):
 
 def robtvwork(msg):
     try:
+        robgift.moniterDanmu(msg['url'])
+        
         re = robtv(msg['url'], msg['real_roomid'], msg['tv_id'])
         re = json.loads(re)
         if ('code' in re) :
