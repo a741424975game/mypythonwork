@@ -72,7 +72,7 @@ def printtime(t):
         return ts
 
 
-def moniterDanmu(url):
+def moniterDanmu(url, lasttime  = 100):
     
     if (url == "http://live.bilibili.com/356767") :
         print ( 'moniterDanmu  same  return ',  url)
@@ -84,13 +84,13 @@ def moniterDanmu(url):
     try:
         if (url in danmulist) :
             (d,t) = danmulist[url]
-            danmulist[url] = (d, )
+            danmulist[url] = (d, nowt + lasttime)
             
             print('extend moniter', url, printtime(nowt))
         else :
             d = DanMuClient(url)
             d.start(blockThread = False)
-            danmulist[url] = (d, nowt)
+            danmulist[url] = (d, nowt + lasttime)
             print('start moniter', url, printtime(nowt))
     except Exception as e:
         print(e)
@@ -112,7 +112,7 @@ def work():
         
         for key in keys :
             (d,t) = danmulist[key]
-            if (t +400 < nowt) :
+            if (t  < nowt) :
                 d.stop()
                 pt.append(key)
                 print('end moniter', key, printtime(nowt))
@@ -129,7 +129,7 @@ danmuthread.start()
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
     
-    moniterDanmu("http://live.bilibili.com/82789")
+    moniterDanmu("http://live.bilibili.com/82789", 15)
     
     while True:
         print(time.time())
