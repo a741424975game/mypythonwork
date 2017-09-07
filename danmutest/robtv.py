@@ -99,6 +99,7 @@ def checktvresult(roomurl, tvid):
     
     try:
         fo = open('result.txt', 'a', encoding = 'utf-8')
+        print(robgift.printtime(), file = fo)
         print(url, file = fo)
         print(re, file = fo)
         fo.close()

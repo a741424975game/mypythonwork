@@ -16,9 +16,10 @@ try:
 	print(x)
 	x.write('test')
 	
-	output = sys.stdout = open('log.txt', 'a')
+	output = sys.stdout = open('log.txt', 'a', encoding ='utf-8')
 	
-except:
+except Exception as e:
+	print(e)
 	print ('dup run ,  exit')
 	g = open('dup.txt', 'a')
 	g.write('dup run ,  exit \n')
