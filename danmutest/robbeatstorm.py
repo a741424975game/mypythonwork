@@ -80,12 +80,20 @@ def robglobalstormwork(msg):
     def danmu_fn(msg, realroomid = realroomId):
         try:
             m = msg['Content']
-            danmu_count[ m] +=1
-            if danmu_count[m] >25 :
+            
+            if (m not in danmu_count):
+                danmu_count [m] = 1;
+            else :
+                danmu_count[ m] +=1
+            
+            #print(danmu_count)    
+            
+            if danmu_count[m] >10 :
                 print ('send duplicate 25')
-                robgift.sendDanmu(realroomid, m)
-                time.sleep(4.0)
-                robgift.sendDanmu(realroomid, m)
+                for i in range(5):
+                    re = robgift.sendDanmu(realroomid, m)
+                    if (re.find('"msg":""') != -1): break
+                    time.sleep(4.0)
                 dmc.stop()
                 danmu_count.clear()
         except Exception as e:
