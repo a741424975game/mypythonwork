@@ -24,6 +24,22 @@ local: 2017 08 30 15:15:22
 ent": "", "MsgType": "other"}
  
 Other message end
+
+
+{"code":0,"message":"OK","msg":"OK","data":
+{"cmd":"SPECIAL_TIPS","tips":
+{"gift_id":39,"title":"\u8282\u594f\u98ce\u66b4",
+"content":"<p>\u4f60\u662f\u524d 2000 \u4f4d\u8ddf\u98ce\u5927\u5e08<br \/>\u606d\u559c\u4f60\u83b7\u5f97\u4e00\u4e2a\u4ebf\u5706(7\u5929\u6709\u6548\u671f)<\/p>",
+"mobile_content":"\u4f60\u662f\u524d 2000 \u4f4d\u8ddf\u98ce\u5927\u5e08",
+"gift_img":"http:\/\/static.hdslb.com\/live-static\/live-room\/images\/gift-section\/gift-6.png?2017011901",
+"gift_num":1,"gift_name":"\u4ebf\u5706"}}}
+
+
+{"code":0,"message":"OK","msg":"OK",
+    "data":
+    {"gift39":
+    {"id":"117336","num":4000,"time":49,"content":"\u6253call\u6253call","hadJoin":1}}}
+
 """
 
 def isBeatstorm(msg):
@@ -74,6 +90,7 @@ def robglobalstormwork(msg):
     if (realroomId == 356767) :
         print('356767   same  ')
         return
+    
     danmu_count = {}
     print(' robglobalstormwork realroomId ', realroomId)
     @dmc.danmu
@@ -90,7 +107,7 @@ def robglobalstormwork(msg):
             
             if danmu_count[m] >10 :
                 print ('send duplicate 25')
-                for i in range(5):
+                for i in range(4):
                     re = robgift.sendDanmu(realroomid, m)
                     if (re.find('"msg":""') != -1): break
                     time.sleep(4.0)
@@ -122,8 +139,51 @@ def robglobalstormwork(msg):
     time.sleep(100)
     dmc.stop()
     print('robglobalstormwork  end')
+    
+def robglobalstormwork2(msg):
+    
+    print('try  new robglobalstormwork2')
+    
+    url = msg['url']
+    print(url)
+    
+    realroomId = re.findall(b'var ROOMID = (\d+);', requests.get(url).content)[0].decode('ascii')
+    if (realroomId == 356767) :
+        print('356767   same  ')
+        return
+    try:
+        u11 = "http://api.live.bilibili.com/SpecialGift/room/%s" % (realroomId)
+        print(u11)
+        xxx = requests.get(u11).content[0].decode('utf-8')
+        print(xxx)
+        jo = json.loads(xxx)
+        xxx = jo['data']['gift39']
+        if xxx['hadJoin'] == 1: return True
+        
+        m = xxx['content']
+        print(m)
+        m = m.decode('utf-8')
+        print(m)
+        
+        return False
+        
+        re = robgift.sendDanmu(realroomId, m)
+        
+        print(re)
+        jo = json.loads(re)
+        
+        return isBeatstorm(jo)
+        
+        
+    except Exception as e:
+        print(e)
+    
+    return False
+    
 def robglobaltest(msg):
     try:
+        if (robglobalstormwork2(msg)): return
+        
         robglobalstormwork(msg)
     except Exception as e:
         print('robglobaltest',e)

@@ -66,7 +66,8 @@ danmulist = {}
 
 danmumutex = threading.Lock() 
 
-def printtime(t = time.time()):
+def printtime(t = None):
+        if (t is None) : t = time.time()
         localtime = time.localtime(t)
         ts = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
         return ts
