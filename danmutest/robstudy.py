@@ -168,13 +168,13 @@ def robstudywork(msg):
     try:
         robgift.moniterDanmu(msg['url'])
         robstudy(msg['url'], msg['real_roomid'])
-  
+        print ('rob study finished')
     except Exception as e :
         print('rob study work except', e)
         robgift.bbbb()
         return
         
-    print ('rob study ok')
+    
  
         
         
