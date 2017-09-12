@@ -172,10 +172,12 @@ def robglobalstormwork2(msg):
         print(r)
         jo = json.loads(r)
         
-        return isBeatstorm(jo)
-        
+        f =  isBeatstorm(jo)
+        print(f)
+        return False
         
     except Exception as e:
+        
         print(e)
     
     return False
