@@ -167,10 +167,10 @@ def robglobalstormwork2(msg):
         
         return False
         
-        re = robgift.sendDanmu(realroomId, m)
+        r = robgift.sendDanmu(realroomId, m)
         
-        print(re)
-        jo = json.loads(re)
+        print(r)
+        jo = json.loads(r)
         
         return isBeatstorm(jo)
         
@@ -183,10 +183,14 @@ def robglobalstormwork2(msg):
 def robglobaltest(msg):
     try:
         if (robglobalstormwork2(msg)): return
-        
+    except Exception as e:
+        print('robglobaltest11111',e)
+    try:
         robglobalstormwork(msg)
     except Exception as e:
-        print('robglobaltest',e)
+        robgift.bbbb()
+        robgift.bbbb()
+        print('robglobaltest22222',e)
      
 def robGlobalstorm(msg):
     print('rob global beat storm begin')
