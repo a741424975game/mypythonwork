@@ -154,10 +154,13 @@ def robglobalstormwork2(msg):
     try:
         u11 = "http://api.live.bilibili.com/SpecialGift/room/%s" % (realroomId)
         print(u11)
-        xxx = requests.get(u11).content[0].decode('utf-8')
+        ccc = requests.get(u11).content;
+        print(ccc)
+        xxx = ccc.decode('utf-8')
         print(xxx)
         jo = json.loads(xxx)
         xxx = jo['data']['gift39']
+        if (xxx is None): return False
         if xxx['hadJoin'] == 1: return True
         
         m = xxx['content']
@@ -220,7 +223,15 @@ def robBeatstormWork(msg):
         
         
 if __name__ == "__main__":
-    
+    u11 = "http://api.live.bilibili.com/SpecialGift/room/356767" 
+    print(u11)
+    ccc = requests.get(u11).content;
+    print(ccc)
+    xxx = ccc.decode('utf-8')
+    print(xxx) 
+    jo = json.loads(xxx)
+    xxx = jo['data']['gift39']
+    print(xxx)
     d = {}
     d[1] = 1
     d[1] +=2
