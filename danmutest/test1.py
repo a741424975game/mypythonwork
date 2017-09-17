@@ -43,9 +43,10 @@ print('3')
 def danmu_fn(msg):
     try:
 
-        if (msg['NickName'] == '十八呀么十八喵') :
+        if (msg['NickName'] == '十八にゃ') :
             #robgift.sendDanmu(356767, emoji.randEmoji())
             robgift.bbbb()
+            print(msg)
             pp('[%s] %s' % (msg['NickName'], msg['Content']))
         
         fo = open('danmu.txt', 'a',  encoding ='utf-8')
