@@ -130,7 +130,11 @@ danmuthread.start()
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
     
-    moniterDanmu("http://live.bilibili.com/82789", 15)
+    sendDanmu(82789, "asdfadfasdfasf");
+    
+    #moniterDanmu("http://live.bilibili.com/82789", 15)
+    
+    
     
     while True:
         print(time.time())
