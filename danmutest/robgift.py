@@ -1,6 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import time, urllib,   threading,   winsound 
+import time, urllib,   threading,   winsound, requests, json , re
 import bilibilicookie
 from danmu import DanMuClient
 danmu_rnd = int(time.time())
@@ -56,12 +56,132 @@ def sendDanmu(realroomid, msg, test = False):
         return
     
     r=urllib.request.urlopen(req)
-    re = r.read().decode('utf-8')
-    print(re)
-    return re
+    result = r.read().decode('utf-8')
+    print(result)
+    return result
 
 
+def sendGift(realroomid, giftId, giftNum, giftBagId):
+    
+    url = "http://api.live.bilibili.com/giftBag/send" 
+    
+    token = re.findall('LIVE_LOGIN_DATA=(.*?);', bilibilicookie.nowcookie)[0] 
+    
+    timestamp = str(int( time.time() * 1000) )  
+    postdata=urllib.parse.urlencode({  
+              "giftId": giftId,
+              "roomid":realroomid,  
+              "ruid": 2013332,
+              "num": giftNum,
+              "coinType" : "silver",
+              "Bag_id" : giftBagId,
+              "timestamp" : timestamp,
+              "rnd": danmu_rnd,
+              "token" : token
 
+              
+              
+                    }).encode('utf-8') 
+    
+    
+    header={
+        "Accept":" */*",
+        #"Accept-Encoding":"gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.8",
+        "Connection":"keep-alive",
+        "Cookie": bilibilicookie.nowcookie,
+        "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+        "Host":"api.live.bilibili.com",
+        "Origin":"http://static.hdslb.com",
+        "Referer": "http://static.hdslb.com/live-static/swf/LivePlayerEx_1.swf?_=1-1-1.1.0",
+        "User-Agent":bilibilicookie.nowagent,
+        "X-Requested-With" : "ShockwaveFlash/26.0.0.151",       
+        }
+    
+    
+    print('try send gift',realroomid, giftId, giftNum, giftBagId)
+    
+    
+    print(url)
+    print(postdata)
+    #print(header)
+    
+    req = urllib.request.Request(url,postdata,header)
+    
+    r=urllib.request.urlopen(req)
+    result = r.read().decode('utf-8')
+    print(result)
+    return result
+
+
+def getGiftBag():
+    
+    timestamp = str(int( time.time() * 1000) )  
+    url  = "http://api.live.bilibili.com/gift/playerBag?_=" + timestamp
+    print(url)
+    
+    header={
+        "Accept":"application/json, text/javascript, */*; q=0.01",
+        "Accept-Encoding":"gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.8",
+        "Connection":"keep-alive",
+        "Cookie": bilibilicookie.nowcookie,
+        
+        "Host":"api.live.bilibili.com",
+        "Origin":"http://live.bilibili.com",
+        "Referer": "http://live.bilibili.com/356767",
+         
+        "User-Agent":bilibilicookie.nowagent,
+                
+        }
+     
+    
+    req = urllib.request.Request(url,None,header)
+    
+    r=urllib.request.urlopen(req)
+    result = r.read().decode('utf-8')
+    print(result)
+    
+    try:
+        jo = json.loads(result)
+        data  = jo["data"]
+        if ( len(data) ==0): return []
+        return data
+    except Exception as e:
+        print(e)
+        return []
+
+
+def dosign():
+     
+    url  = "http://api.live.bilibili.com/sign/doSign"
+    print(url)
+    
+    header={
+        "Accept":"application/json, text/javascript, */*; q=0.01",
+ 
+        "Accept-Language": "zh-CN,zh;q=0.8",
+        "Connection":"keep-alive",
+        "Cookie": bilibilicookie.nowcookie,
+        
+        "Host":"api.live.bilibili.com",
+        "Origin":"http://live.bilibili.com",
+        "Referer": "http://live.bilibili.com/356767",
+         
+        "User-Agent":bilibilicookie.nowagent,
+                
+        }
+     
+    
+    req = urllib.request.Request(url,None,header)
+    
+    r=urllib.request.urlopen(req)
+    result = r.read().decode('utf-8')
+    print(result)
+    
+ 
+    
+    
 danmulist = {}
 
 danmumutex = threading.Lock() 
@@ -100,7 +220,7 @@ def moniterDanmu(url, lasttime  = 100):
 
     
 
-def work():
+def moniterendwork():
     print("enter danmu work")
     while True:
         time.sleep(10)
@@ -122,15 +242,60 @@ def work():
             danmulist.pop(x)
         danmumutex.release()
 
-danmuthread = threading.Thread(target=work)
+danmuthread = threading.Thread(target=moniterendwork)
 danmuthread.setDaemon(True)
 danmuthread.start()
         
+        
+def giftmoniter():
+    
+    print("enter giftmoniter")
+    
+ 
+
+ 
+    while True:
+        try:
+            print("try sign")
+            dosign()
+        except Exception as e:
+            print(e)
+        try:
+            print("check gift bag")
+            gb = getGiftBag()
+            for x in gb:
+                if x['expireat'] == '今天':
+                    print('send gift')
+                    sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
+                    time.sleep(1)
+        except Exception as e:
+            print(e)
+            
+        time.sleep(3600 * 4)
+        
+
+        
+         
+    pass        
+danmuthread1 = threading.Thread(target=giftmoniter)
+danmuthread1.setDaemon(True)
+danmuthread1.start()        
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
     
-    sendDanmu(82789, "asdfadfasdfasf");
+    x = re.findall('LIVE_LOGIN_DATA=(.*?);', bilibilicookie.nowcookie)[0] 
+    print(x)
+    
+    print(1111)
+    #sendGift(356767,1,1,44385613 )
+    #dosign()
+    print(2222)
+    
+    x = getGiftBag()
+    print(x)
+    
+    #sendDanmu(82789, "asdfadfasdfasf");
     
     #moniterDanmu("http://live.bilibili.com/82789", 15)
     
