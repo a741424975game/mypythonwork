@@ -319,6 +319,31 @@ def giftmoniter():
             print(e)
             
         time.sleep(3600 * 4)
+        
+def getexpireat(s):
+    if s == '今日':
+        return 1
+    if s == '明日' or s=='明天':
+        return 2
+    
+    try:
+        x = s.find('天')
+        if x>=0 :
+            return int(s[0:x])
+    except Exception as e:
+        print(e)
+        
+    return 3
+def getOneGift() :
+    gb = getGiftBag()
+    target = None
+    tt = 99
+    for x in gb:
+        t = getexpireat(x['expireat'])
+        if (t<tt) :
+            tt = t
+            target = x
+    return target
 
 def unionmoniter():
     
@@ -339,34 +364,10 @@ def unionmoniter():
             print("try checkUnionRank  ")
             while(1) :
                 count = checkUnionRank()
-                
-                def getexpireat(s):
-                    if s == '今日':
-                        return 1
-                    if s == '明日' or s=='明天':
-                        return 2
-                    
-                    try:
-                        x = s.find('天')
-                        if x>=0 :
-                            return int(s[0:x])
-                    except Exception as e:
-                        print(e)
-                        
-                    return 3
- 
-                
                 if (count >4) :
-                    gb = getGiftBag()
-                    target = None
-                    tt = 99
-                    for x in gb:
-                        t = getexpireat(x['expireat'])
-                        if (t<tt) :
-                            tt = t
-                            target = x
+                    x = getOneGift()
                             
-                    if target != None:
+                    if x != None:
                         print('send gift')
                         sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
                         time.sleep(5)
@@ -379,7 +380,7 @@ def unionmoniter():
             
         time.sleep(sleeptime)
 
-if True or __name__ != "__main__":
+if   __name__ != "__main__":
     danmuthread = threading.Thread(target=moniterendwork)
     danmuthread.setDaemon(True)
     danmuthread.start()
@@ -394,7 +395,9 @@ if True or __name__ != "__main__":
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
-    
+    x = getOneGift()
+    print(x)
+    exit()
     checkUnionRank()
     exit()    
     x = re.findall('LIVE_LOGIN_DATA=(.*?);', bilibilicookie.nowcookie)[0] 
