@@ -122,7 +122,7 @@ def getGiftBag():
     
     header={
         "Accept":"application/json, text/javascript, */*; q=0.01",
-        "Accept-Encoding":"gzip, deflate",
+        #"Accept-Encoding":"gzip, deflate",
         "Accept-Language": "zh-CN,zh;q=0.8",
         "Connection":"keep-alive",
         "Cookie": bilibilicookie.nowcookie,
@@ -180,7 +180,59 @@ def dosign():
     print(result)
     
  
+def checkUnionRank():
+     
+    url  = "http://api.live.bilibili.com/activity/v1/UnionFans/getFansList?page=[page]&type=other"
+
+    header={
+        "Accept":"application/json, text/javascript, */*; q=0.01",
+ 
+        "Accept-Language": "zh-CN,zh;q=0.8",
+        "Connection":"keep-alive",
+        "Cookie": bilibilicookie.nowcookie,
+        
+        "Host":"api.live.bilibili.com",
+        "Origin":"http://live.bilibili.com",
+        "Referer": "http://live.bilibili.com/356767",
+         
+        "User-Agent":bilibilicookie.nowagent,
+                
+        }
+     
+     
+    pool = []
+     
+    for ii in range(1,10) :
+        u = url.replace( "[page]",  str(ii))
+        print(u)
+        req = urllib.request.Request(u,None,header)
+        r=urllib.request.urlopen(req)
+        result = r.read().decode('utf-8')
+        print(result)    
+        
+        jo = json.loads(result)
+        data = jo['data']
+        
+        ll = data['list']
+        pool.extend(ll)
+        
+        tp  = data['totalPage'];
+        tp = int(tp)
+        if (tp == ii): break;
     
+    me = 0;    
+    for x in pool :
+        print(x)
+        if int (x['uid']) == 82778:
+            me = x['weekly_score']
+            break;
+    count = 0;
+    for x in pool :
+        n = x['weekly_score']
+        if me <= n : 
+            count+=1
+    print("count ", count)
+    return count
     
 danmulist = {}
 
@@ -242,18 +294,13 @@ def moniterendwork():
             danmulist.pop(x)
         danmumutex.release()
 
-danmuthread = threading.Thread(target=moniterendwork)
-danmuthread.setDaemon(True)
-danmuthread.start()
+
         
         
 def giftmoniter():
     
     print("enter giftmoniter")
     
- 
-
- 
     while True:
         try:
             print("try sign")
@@ -264,7 +311,7 @@ def giftmoniter():
             print("check gift bag")
             gb = getGiftBag()
             for x in gb:
-                if x['expireat'] == '今天':
+                if x['expireat'] == '今日':
                     print('send gift')
                     sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
                     time.sleep(1)
@@ -272,18 +319,84 @@ def giftmoniter():
             print(e)
             
         time.sleep(3600 * 4)
-        
 
+def unionmoniter():
+    
+    print("enter unionmoniter")
+    
+    while True:
+        sleeptime = 30
         
-         
-    pass        
-danmuthread1 = threading.Thread(target=giftmoniter)
-danmuthread1.setDaemon(True)
-danmuthread1.start()        
+        localtime = time.localtime(time.time())
+        if localtime.tm_wday != 4  :
+            sleeptime = 3600*4
+        else :
+            if  localtime.tw_hour!= 19 or localtime.tm_min<50:
+                time.sleep(sleeptime)
+                continue
+            
+        try:
+            print("try checkUnionRank  ")
+            while(1) :
+                count = checkUnionRank()
+                
+                def getexpireat(s):
+                    if s == '今日':
+                        return 1
+                    if s == '明日' or s=='明天':
+                        return 2
+                    
+                    try:
+                        x = s.find('天')
+                        if x>=0 :
+                            return int(s[0:x])
+                    except Exception as e:
+                        print(e)
+                        
+                    return 3
+ 
+                
+                if (count >4) :
+                    gb = getGiftBag()
+                    target = None
+                    tt = 99
+                    for x in gb:
+                        t = getexpireat(x['expireat'])
+                        if (t<tt) :
+                            tt = t
+                            target = x
+                            
+                    if target != None:
+                        print('send gift')
+                        sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
+                        time.sleep(5)
+                        continue
+                 
+                break;
+            
+        except Exception as e:
+            print(e)    
+            
+        time.sleep(sleeptime)
+
+if True or __name__ != "__main__":
+    danmuthread = threading.Thread(target=moniterendwork)
+    danmuthread.setDaemon(True)
+    danmuthread.start()
+       
+    danmuthread1 = threading.Thread(target=giftmoniter)
+    danmuthread1.setDaemon(True)
+    danmuthread1.start()   
+
+    danmuthread2 = threading.Thread(target=unionmoniter)
+    danmuthread2.setDaemon(True)
+    danmuthread2.start()  
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
     
+    checkUnionRank()
+    exit()    
     x = re.findall('LIVE_LOGIN_DATA=(.*?);', bilibilicookie.nowcookie)[0] 
     print(x)
     
@@ -305,4 +418,6 @@ if __name__ == "__main__":
         print(time.time())
         time.sleep(10)
         
-                    
+        
+
+            
