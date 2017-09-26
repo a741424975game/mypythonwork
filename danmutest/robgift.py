@@ -305,6 +305,7 @@ def giftmoniter():
         try:
             print("try sign")
             dosign()
+            time.sleep(5)
         except Exception as e:
             print(e)
         try:
@@ -395,6 +396,11 @@ if   __name__ != "__main__":
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
+    
+    giftmoniter()
+    exit()
+    
+    
     x = getOneGift()
     print(x)
     exit()
