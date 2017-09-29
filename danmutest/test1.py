@@ -87,7 +87,8 @@ def other_fn(msg):
     
     robbeatstorm.robBeatstormWork(msg)
     robtv.robtvthread(msg)
-    robstudy.robstudythread(msg)
+    
+    #robstudy.robstudythread(msg)
     
     print('Other message end')    
     
