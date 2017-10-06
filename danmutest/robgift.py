@@ -203,11 +203,11 @@ def checkUnionRank():
      
     for ii in range(1,100) :
         u = url.replace( "[page]",  str(ii))
-        print(u)
+        #print(u)
         req = urllib.request.Request(u,None,header)
         r=urllib.request.urlopen(req)
         result = r.read().decode('utf-8')
-        print(result)    
+        #print(result)    
         
         jo = json.loads(result)
         data = jo['data']
@@ -221,7 +221,7 @@ def checkUnionRank():
     
     me = 0;    
     for x in pool :
-        print(x)
+        #print(x)
         if int (x['uid']) == 82778:
             me = x['weekly_score']
             break;
