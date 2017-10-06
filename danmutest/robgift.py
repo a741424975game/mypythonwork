@@ -30,7 +30,6 @@ def sendDanmu(realroomid, msg, test = False):
     
     header={
         "Accept":" */*",
-        "Accept-Encoding":"gzip, deflate",
         "Accept-Language": "zh-CN,zh;q=0.8",
         "Connection":"keep-alive",
         "Cookie": bilibilicookie.nowcookie,
