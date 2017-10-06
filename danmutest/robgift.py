@@ -202,7 +202,7 @@ def checkUnionRank():
      
     pool = []
      
-    for ii in range(1,10) :
+    for ii in range(1,100) :
         u = url.replace( "[page]",  str(ii))
         print(u)
         req = urllib.request.Request(u,None,header)
@@ -230,6 +230,7 @@ def checkUnionRank():
     for x in pool :
         n = x['weekly_score']
         if me <= n : 
+            print(x)
             count+=1
     print("count ", count)
     return count
@@ -326,7 +327,8 @@ def getexpireat(s):
         return 1
     if s == '明日' or s=='明天':
         return 2
-    
+    if s== '永久':
+        return 9999
     try:
         x = s.find('天')
         if x>=0 :
@@ -334,17 +336,32 @@ def getexpireat(s):
     except Exception as e:
         print(e)
         
-    return 3
+    return 99
 def getOneGift() :
     gb = getGiftBag()
     target = None
-    tt = 99
+    tt = 999
     for x in gb:
         t = getexpireat(x['expireat'])
         if (t<tt) :
             tt = t
             target = x
     return target
+
+def catchrank():
+    print("try checkUnionRank  ")
+    while(1) :
+        count = checkUnionRank()
+        if (count >5) :
+            x = getOneGift()
+                    
+            if x != None:
+                print('send gift')
+                sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
+                time.sleep(5)
+                continue
+         
+        break;    
 
 def unionmoniter():
     
@@ -357,24 +374,13 @@ def unionmoniter():
         if localtime.tm_wday != 4  :
             sleeptime = 3600*4
         else :
-            if  localtime.tw_hour!= 19 or localtime.tm_min<50:
+            if  localtime.tm_hour!= 19 or localtime.tm_min<50:
                 time.sleep(sleeptime)
                 continue
             
         try:
-            print("try checkUnionRank  ")
-            while(1) :
-                count = checkUnionRank()
-                if (count >4) :
-                    x = getOneGift()
-                            
-                    if x != None:
-                        print('send gift')
-                        sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
-                        time.sleep(5)
-                        continue
-                 
-                break;
+            catchrank()
+
             
         except Exception as e:
             print(e)    
@@ -396,16 +402,18 @@ if   __name__ != "__main__":
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
+    catchrank()
+    exit()
+    checkUnionRank()
+    x = getOneGift()
+    print(x)
+    exit()    
     
     giftmoniter()
     exit()
     
     
-    x = getOneGift()
-    print(x)
     exit()
-    checkUnionRank()
-    exit()    
     x = re.findall('LIVE_LOGIN_DATA=(.*?);', bilibilicookie.nowcookie)[0] 
     print(x)
     
