@@ -60,7 +60,9 @@ def sendDanmu(realroomid, msg, test = False):
     return result
 
 
-def sendGift(realroomid, giftId, giftNum, giftBagId):
+
+    
+def sendGift(realroomid, ruid,giftId, giftNum, giftBagId):
     
     url = "http://api.live.bilibili.com/giftBag/send" 
     
@@ -70,7 +72,7 @@ def sendGift(realroomid, giftId, giftNum, giftBagId):
     postdata=urllib.parse.urlencode({  
               "giftId": giftId,
               "roomid":realroomid,  
-              "ruid": 2013332,
+              "ruid": ruid ,
               "num": giftNum,
               "coinType" : "silver",
               "Bag_id" : giftBagId,
@@ -100,6 +102,59 @@ def sendGift(realroomid, giftId, giftNum, giftBagId):
     
     print('try send gift',realroomid, giftId, giftNum, giftBagId)
     
+    #print(url)
+    #print(postdata)
+    #print(header)
+    
+    req = urllib.request.Request(url,postdata,header)
+    
+    r=urllib.request.urlopen(req)
+    result = r.read().decode('utf-8')
+    print(result)
+    return result
+
+def sendGiftSilver(realroomid, ruid, giftId, giftNum ):
+    
+    url = "http://api.live.bilibili.com/gift/send" 
+    
+    token = re.findall('LIVE_LOGIN_DATA=(.*?);', bilibilicookie.nowcookie)[0] 
+    csrf_token = re.findall('bili_jct=(.*?);', bilibilicookie.nowcookie)[0] 
+    
+    timestamp = str(int( time.time() * 1000) )  
+    postdata=urllib.parse.urlencode({  
+              "giftId": giftId,
+              "roomid":realroomid,  
+              "ruid": ruid,    # to do  get ruid
+              "num": giftNum,
+              "coinType" : "silver",
+              "Bag_id" : 0,
+              "timestamp" : timestamp,
+              "rnd": danmu_rnd,
+              "token" : token,
+              "csrf_token": csrf_token
+
+              
+              
+                    }).encode('utf-8') 
+    
+    
+    header={
+        "Accept":" */*",
+        #"Accept-Encoding":"gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.8",
+        "Connection":"keep-alive",
+        "Cookie": bilibilicookie.nowcookie,
+        "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+        "Host":"api.live.bilibili.com",
+        "Origin":"http://static.hdslb.com",
+        "Referer": "http://static.hdslb.com/live-static/swf/LivePlayerEx_1.swf?_=1-1-1.1.0",
+        "User-Agent":bilibilicookie.nowagent,
+        "X-Requested-With" : "ShockwaveFlash/26.0.0.151",       
+        }
+    
+    
+    print('try send gift',realroomid, giftId, giftNum   )
+    
     
     print(url)
     print(postdata)
@@ -111,7 +166,6 @@ def sendGift(realroomid, giftId, giftNum, giftBagId):
     result = r.read().decode('utf-8')
     print(result)
     return result
-
 
 def getGiftBag():
     
@@ -147,7 +201,7 @@ def getGiftBag():
         if ( len(data) ==0): return []
         return data
     except Exception as e:
-        print(e)
+        print('getGiftBag', e)
         return []
 
 
@@ -218,6 +272,7 @@ def checkUnionRank():
         tp  = data['totalPage'];
         tp = int(tp)
         if (tp == ii): break;
+        time.sleep(1)
     
     me = 0;    
     for x in pool :
@@ -226,13 +281,19 @@ def checkUnionRank():
             me = x['weekly_score']
             break;
     count = 0;
+    
+    res = []
+    
     for x in pool :
         n = x['weekly_score']
         if me <= n : 
             print(x)
+            res.append(n)
             count+=1
+    res.sort(reverse = True)
+    
     print("count ", count)
-    return count
+    return (count, res)
     
 danmulist = {}
 
@@ -309,12 +370,12 @@ def giftmoniter():
         except Exception as e:
             print(e)
         try:
-            print("check gift bag")
+            print("check  and clear gift bag")
             gb = getGiftBag()
             for x in gb:
                 if x['expireat'] == '今日':
                     print('send gift')
-                    sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
+                    sendGift(356767, 2013332, x['gift_id'], x['gift_num'], x['id'])
                     time.sleep(1)
         except Exception as e:
             print(e)
@@ -326,40 +387,81 @@ def getexpireat(s):
         return 1
     if s == '明日' or s=='明天':
         return 2
-    if s== '永久':
-        return 9999
+    if s== 0:
+        return 999
     try:
         x = s.find('天')
         if x>=0 :
             return int(s[0:x])
     except Exception as e:
-        print(e)
+        print('getexpireat',s, e)
         
     return 99
+
 def getOneGift() :
+ 
     gb = getGiftBag()
+ 
     target = None
-    tt = 999
+    tt = 9999
     for x in gb:
         t = getexpireat(x['expireat'])
         if (t<tt) :
             tt = t
             target = x
+            
     return target
 
+ 
+def giftPrice(price):
+    try:
+        a = price.find('金')
+        b = price.find('银')
+        if (a>0):
+            return int(price[0:a])
+        if (b>0):
+            return int(price[0,b])
+    except Exception as e:
+        print('giftPrice', e)
+        
+    return 1
+
+
+def getScore(diff):
+    print('diff', diff)
+    while diff >0:
+        x = getOneGift()
+        if x != None:
+            score = giftPrice(x['gift_price']) / 100
+            
+            num = x['gift_num']
+            num0 = int(diff / score)
+            if (num0 * score <diff ):  num0+=1
+            
+            if (num0 > num ): num0 = num
+            diff -= num0 * score
+            
+            print('left', diff)
+            
+            print('send gift')
+            sendGift(356767, 2013332, x['gift_id'], num0, x['id'])
+            time.sleep(2)
+            continue
+        else :
+            if (diff > 0):
+                sendGiftSilver(356767, 2013332, 1, diff )
+                diff = 0
+                break
 def catchrank():
-    print("try checkUnionRank  ")
+    print("try catchrank  ")
     while(1) :
-        count = checkUnionRank()
-        if (count >5) :
-            x = getOneGift()
-                    
-            if x != None:
-                print('send gift')
-                sendGift(356767, x['gift_id'], x['gift_num'], x['id'])
-                time.sleep(5)
-                continue
-         
+        (count, sl)  = checkUnionRank()
+        
+        target = 4
+        
+        if (count > target) :
+            diff = sl[target - 1] - sl[len(sl)-1] + 1
+            getScore(diff)
         break;    
 
 def unionmoniter():
@@ -376,6 +478,9 @@ def unionmoniter():
             if  localtime.tm_hour!= 19 or localtime.tm_min<50:
                 time.sleep(sleeptime)
                 continue
+            
+        if localtime.tm_min > 57:
+            sleeptime = 5
             
         try:
             catchrank()
@@ -401,13 +506,35 @@ if   __name__ != "__main__":
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
+    
+
+    
+    xxx = getOneGift()
+    print(111)
+    print(xxx['gift_price'])
+    score = giftPrice(xxx['gift_price']) / 100
+    print(222)
+    print(score)
+    exit()
     catchrank()
     exit()
+    (count, sl)  = checkUnionRank()
+    
+    print(count)
+    print(sl)
+    print( sl[len(sl)-1])
+    exit()
+
     checkUnionRank()
     x = getOneGift()
     print(x)
     exit()    
     
+    #sendGiftSilver(356767, 2013332, 1,1 )
+    exit()
+    #getScore(1)
+    exit()
+
     giftmoniter()
     exit()
     
