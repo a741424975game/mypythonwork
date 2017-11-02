@@ -20,10 +20,22 @@ class BilibiliDanMuClient(AbstractDanMuClient):
     
  
     def _get_live_status(self):
-        url = ('http://live.bilibili.com/'
-            + self.url.split('/')[-1] or self.url.split('/')[-2])
-        self.roomId = re.findall(b'var ROOMID = (\d+);', requests.get(url).content)[0].decode('ascii')
-        r = requests.get('http://live.bilibili.com/api/player?id=cid:' + self.roomId)
+        #print("sssssss")
+        x1 = self.url.split('/')[-1] or self.url.split('/')[-2];
+        #print(x1)
+        url = ('http://api.live.bilibili.com/room/v1/Room/room_init?id='  + x1)
+        #print(url)
+        x = requests.get(url).content
+        # print (x)
+        y = json.loads(x.decode('ascii'))
+        #print(y)
+        #self.roomId = re.findall(b'WebSocket On Open\. rid\:(\d+)\n', x)[0].decode('ascii')
+        self.roomId = y['data']['room_id']
+        #print(self.roomId)
+        url = 'http://live.bilibili.com/api/player?id=cid:' + str(self.roomId)
+        r = requests.get(url)
+        
+        #print(r.content)
         self.serverUrl = re.findall(b'<server>(.*?)</server>', r.content)[0].decode('ascii')
         self.port = re.findall(b'<dm_port>(.*?)</dm_port>', r.content)[0].decode('ascii')
  

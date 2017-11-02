@@ -9,7 +9,7 @@ studyCheck = []
 studymutex = threading.Lock() 
 def isStudy(msg):
     try:
-        if msg['giftId'] == 85 :
+        if int(msg['giftId']) == 103 :
             return True
     except:
         pass
@@ -22,12 +22,12 @@ def robstudy(roomurl, realroomid,   test = False):
     delay =  random.randint(2000, 4000)
     time.sleep( delay * 2/ 1000.0)
      
-    robgift.sendDanmu(realroomid, '(-_-)' )
+    #robgift.sendDanmu(realroomid, '(-_-)' )
     
     time.sleep( delay  / 1000.0)
     data = []
     try:
-        u1 = "http://api.live.bilibili.com/activity/v1/SchoolOpen/check?roomid=" +  (realroomid)
+        u1 = "https://api.live.bilibili.com/activity/v1/Raffle/check?roomid=" +  (realroomid)
         print(u1)
         re0 = requests.get(u1).content
         print(re0)
@@ -51,16 +51,13 @@ def robstudy(roomurl, realroomid,   test = False):
         try:
             #{"code":0,"msg":"success","message":"success",
             #"data":[{"raffleId":"27279","type":"school","from":"黑丝细腿","time":38,"status":1}]}
-            url = "http://api.live.bilibili.com/activity/v1/SchoolOpen/join" 
+            url = "https://api.live.bilibili.com/activity/v1/Raffle/join?roomid="  + str(realroomid) + "&raffleId=" + str(target['raffleId'])
             raffleId = int(target['raffleId'])
              
             if (raffleId in studyHistory):
                 print ('already inside')
                 continue
-            postdata=urllib.parse.urlencode({  
-                      "roomid":realroomid,  
-                      "raffleId": raffleId
-                            }).encode('utf-8')
+ 
             
             header={
                 "Accept":"application/json, text/javascript, */*; q=0.01",
@@ -78,9 +75,9 @@ def robstudy(roomurl, realroomid,   test = False):
                 }
             
             print('try rob study')
-            print(postdata)
+ 
             
-            req = urllib.request.Request(url,postdata,header)
+            req = urllib.request.Request(url,None,header)
             
             r=urllib.request.urlopen(req)
             r1 = r.read();
@@ -120,7 +117,7 @@ def robstudy(roomurl, realroomid,   test = False):
     
     if (acc>0) :
         time.sleep(delay/ 1000.0)
-        robgift.sendDanmu(realroomid, '(;-_-)')        
+        #robgift.sendDanmu(realroomid, '(;-_-)')        
     
     return True
 
@@ -129,7 +126,7 @@ def checkstudyresult(roomurl, realroomid, raffleid):
     realroomid = int(realroomid)
     raffleid = int(raffleid)
 
-    url = "http://api.live.bilibili.com/activity/v1/SchoolOpen/notice?roomid=%d&raffleId=%d" % (  realroomid, raffleid)
+    url = "https://api.live.bilibili.com/activity/v1/Raffle/notice?roomid=%d&raffleId=%d" % (  realroomid, raffleid)
     
     #postdata=urllib.parse.urlencode({        "JobName":"测试工程师",        }).encode('utf-8')
     header={

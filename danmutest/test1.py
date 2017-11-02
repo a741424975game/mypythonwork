@@ -6,7 +6,7 @@ import time, sys, os
 import robgift 
 import robtv
 import robstudy
-import robbeatstorm
+ 
 
 
 from danmu import DanMuClient
@@ -85,10 +85,9 @@ def other_fn(msg):
         print('save file', e)
     
     
-    robbeatstorm.robBeatstormWork(msg)
+    #robbeatstorm.robBeatstormWork(msg)
     robtv.robtvthread(msg)
-    
-    #robstudy.robstudythread(msg)
+    robstudy.robstudythread(msg)
     
     print('Other message end')    
     

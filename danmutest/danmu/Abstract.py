@@ -38,6 +38,7 @@ class AbstractDanMuClient(object):
                 self._wrap_thread(danmuThreadFn, heartThreadFn)
                 self._start_receive()
             except Exception as e:
+                print(e)
                 logger.debug(traceback.format_exc())
                 time.sleep(5)
             else:
