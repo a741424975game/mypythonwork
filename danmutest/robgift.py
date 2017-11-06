@@ -434,7 +434,7 @@ def getScore(diff):
         if x != None:
             score = giftPrice(x['gift_price']) / 100
             
-            num = x['gift_num']
+            num = int(x['gift_num'])
             num0 = int(diff / score)
             if (num0 * score <diff ):  num0+=1
             
@@ -506,7 +506,10 @@ if   __name__ != "__main__":
             
 if __name__ == "__main__":
     print('robgift!!!!!!!!!!!!!!!!!!!!')
-    
+    getScore(1)
+    exit()
+    catchrank()
+    exit()
 
     
     xxx = getOneGift()
@@ -516,8 +519,7 @@ if __name__ == "__main__":
     print(222)
     print(score)
     exit()
-    catchrank()
-    exit()
+
     (count, sl)  = checkUnionRank()
     
     print(count)
