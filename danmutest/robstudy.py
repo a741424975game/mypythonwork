@@ -11,6 +11,8 @@ def isStudy(msg):
     try:
         if int(msg['giftId']) == 103 :
             return True
+        if int(msg['giftId']) == 102 :
+            return True
     except:
         pass
     return False      
