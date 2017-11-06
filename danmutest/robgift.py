@@ -1,6 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import time, urllib,   threading,   winsound, requests, json , re
+import time, urllib,   threading,   winsound,   json , re
 import bilibilicookie
 from danmu import DanMuClient
 danmu_rnd = int(time.time())

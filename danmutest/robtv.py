@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-import random, time, urllib, threading, json 
+import random, time, urllib, threading, json, requests 
 import robgift
 import bilibilicookie
 
@@ -11,6 +11,44 @@ def isTv(msg):
         pass
     
     return False
+
+tvset1 = set()
+tvset2 = set()
+
+def checkTV(realroomid, tv_id):
+    try:
+        tv_id = int(tv_id)
+        tvset1.add(tv_id)
+        url = "https://api.live.bilibili.com/gift/v2/smalltv/check?roomid=" + str(realroomid);
+        x0 = requests.get(url).content
+ 
+        x = x0.decode('utf-8')
+ 
+        jo = json.loads(x)
+        """
+            {"code":0,"msg":"OK","message":"OK","data":[{"raffleId":28872,"type":"small_tv","from":"","from_user":null,"time":0,"status":0}]}
+
+        """
+        a = jo["data"]
+        if (not isinstance(a, list)):
+            return True;
+        same= False
+        for x in a:
+            rid =int(x["raffleId"])
+            tvset2.add(rid)
+            if ( rid == tv_id): same = True
+            pass
+        d = tvset2.difference(tvset1)
+        if (len(d) >0) : 
+            print("!!!!!!!! mystery tv id",d)
+        
+        if same: return True
+        print(x0)
+        return False
+    except Exception as e:
+        print('checkTV', e);
+        
+    return True
 
 def robtv(roomurl, realroomid, tvid, test = False):
     print('try rob tv')
@@ -108,8 +146,11 @@ def checktvresult(roomurl, tvid):
 
 def robtvwork(msg):
     try:
+        x = checkTV(msg['real_roomid'], msg['tv_id'])
+        if not x:
+            print("missing tv id");
+            return
         robgift.moniterDanmu(msg['url'], 400)
-        
         re = robtv(msg['url'], msg['real_roomid'], msg['tv_id'])
         re = json.loads(re)
         if ('code' in re) :
@@ -137,8 +178,13 @@ def robtvthread(msg):
     
     
 if __name__ == '__main__':    
+    sss = {1,2,3,5,6,6}
+    print(len(sss))
+    print ('robtv main')
+    x = checkTV(24541, 28872)
+    print(x)
+    exit()
     
-    print ('dfasdf')
     robtvthread(1)
     
     while True:
